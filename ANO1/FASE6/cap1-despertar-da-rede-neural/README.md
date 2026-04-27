@@ -12,9 +12,9 @@
 
 ## 👨‍🎓 Integrantes
 - <a href="https://www.linkedin.com/in/rivando-neto/">Rivando Bezerra Cavalcanti Neto (RM568235)</a>
-- <a href="https://www.linkedin.com/company/inova-fusca">Leticia Angelim Guerra (RM567501)</a>
-- <a href="https://www.linkedin.com/company/inova-fusca">Tales Ferraz de Arruda Domienikan (RM567483)</a>
-- <a href="https://www.linkedin.com/company/inova-fusca">Matheus Guimarães França (RM567144)</a>
+- <a href="https://www.linkedin.com/company/leticiaguerra">Leticia Angelim Guerra (RM567501)</a>
+- <a href="http://linkedin.com/in/tales-domienikan-9446ba391/">Tales Ferraz de Arruda Domienikan (RM567483)</a>
+- <a href="https://www.linkedin.com/company/matheus-frança-7b9925405">Matheus Guimarães França (RM567144)</a>
 - <a href="https://www.linkedin.com/company/inova-fusca">João Rafael Gonçalves Ramos (RM567908)</a>
 
 ## 👩‍🏫 Professores
