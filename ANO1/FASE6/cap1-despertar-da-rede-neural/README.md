@@ -41,7 +41,7 @@ O notebook principal é auto-contido e funciona tanto no **Google Colab** (monta
 
 ## 🎥 Vídeo demonstrativo (YouTube, não listado)
 
-_adicionar link aqui antes da entrega_
+- <a href="https://youtu.be/nzV1QY16FQk">Clique aqui</a>
 
 ## 📊 Resultados no conjunto de teste (8 imagens nunca vistas)
 
