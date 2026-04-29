@@ -1,29 +1,36 @@
 # 🚀 Projeto Ir Além: Classificação com Transfer Learning e Segmentação  
-### 📌 Fase 6 – Capítulo 1 | Opção 3.2  
+### 📌 Fase 6 – Capítulo 1 | Opção 3.2 | FIAP
 
+## 👥 Integrantes
+| Nome | RM |
+|------|----|
+| Leticia Angelim Guerra | 567501 |
+| Rivando Bezerra Cavalcanti Neto | 568235 |
+| Tales Ferraz de Arruda Domienikan | 567483 |
+| Matheus Guimarães França | 567144 |
+| João Rafael Gonçalves Ramos | 567908 |
+
+## 🔗 Links
+- 📓 **Notebook:** [LeticiaGuerra_rm567501_pbl_fase6_iralem.ipynb](./caminho/para/notebook.ipynb)
+- 🎥 **Vídeo:** 
 ---
 
 ## 📜 Descrição
 
-Este projeto corresponde à atividade **“Ir Além” da Fase 6 – Capítulo 1**, na qual foi escolhida a opção **3.2) Transfer Learning e Fine Tuning**.
+Implementação da opção **3.2 – Transfer Learning e Fine Tuning** do projeto "Ir Além" da Fase 6.
+Foram avaliadas duas hipóteses sobre o dataset de classificação binária (`cow` vs `dog`):
 
-Foi desenvolvida uma abordagem de **classificação de imagens** utilizando o dataset criado na etapa principal (classes *cow* e *dog*).
-
-O objetivo foi investigar duas hipóteses principais:
-
-- Redes pré-treinadas (Transfer Learning) apresentam melhor desempenho do que redes treinadas do zero?  
-- A remoção do fundo das imagens (segmentação) melhora a capacidade de classificação do modelo?  
-
-Para isso, foram combinadas técnicas de **Transfer Learning**, **Fine Tuning** e **segmentação automática de imagens**.
+1. Redes pré-treinadas superam redes treinadas do zero?
+2. A remoção do fundo (segmentação) melhora a classificação?
 
 ---
 
 ## 🛠️ Tecnologias e Arquitetura
 
-- **Modelo Base:** MobileNetV2 (pré-treinada na ImageNet)  
-- **Framework:** TensorFlow / Keras  
-- **Técnicas:** Transfer Learning e Fine Tuning  
-- **Segmentação:** Biblioteca `rembg` (baseada no modelo U2-Net)  
+- **Modelo base:** MobileNetV2 (pré-treinada na ImageNet)
+- **Framework:** TensorFlow / Keras
+- **Segmentação:** rembg (U²-Net)
+- **Ambiente:** Google Colab + Google Drive
 
 ---
 
@@ -40,78 +47,81 @@ Fine Tuning: Ajuste das últimas camadas
 ↓
 Saída: Classificação binária (cow vs dog)
 ```
-## 🧠 Justificativa das Escolhas Técnicas
+O fluxo do projeto consiste em: a partir do dataset original (cow/dog), são criados dois caminhos paralelos — um com as imagens originais e outro com o fundo removido pela `rembg`. Em ambos, a MobileNetV2 pré-treinada na ImageNet é usada como extratora de características (camadas congeladas), seguida de uma camada densa de classificação binária. Após o treinamento inicial, é aplicado Fine Tuning nas últimas 20 camadas com taxa de aprendizado reduzida. Os dois modelos são então comparados quanto à acurácia final.
 
-### 1) Por que MobileNetV2?
+## 🧠 Justificativa Técnica
 
-A MobileNetV2 foi escolhida por oferecer um bom equilíbrio entre desempenho e eficiência computacional.
+### Por que MobileNetV2?
+Equilíbrio entre acurácia e eficiência computacional. Treinada na ImageNet (>1M imagens), já possui filtros prontos para detectar texturas, bordas e formas complexas — vantagem decisiva diante do nosso dataset de apenas 80 imagens, no qual treinar uma CNN do zero teria capacidade limitada.
 
-Por ser treinada na ImageNet (mais de 1 milhão de imagens), a rede já possui filtros capazes de identificar:
+### Estratégia de Fine Tuning
+- **Etapa 1:** congelamento total da MobileNetV2, treinando apenas a camada `Dense(1, sigmoid)` por 10 épocas com `Adam` (lr padrão).
+- **Etapa 2:** descongelamento das **últimas 20 camadas** com `learning_rate=1e-5` por 5 épocas.
 
-- texturas  
-- bordas  
-- formas complexas  
+A escolha de descongelar apenas as camadas finais preserva o conhecimento de baixo nível (bordas, texturas) aprendido na ImageNet e adapta somente a representação de alto nível ao domínio específico do problema.
 
-Isso é especialmente importante em um cenário com apenas 80 imagens, onde o treinamento do zero seria limitado.
+### Pré-processamento
+- Redimensionamento para **224×224** (input nativo da MobileNetV2).
+- Normalização `rescale=1./255`.
+- Sem data augmentation — dataset pequeno e classes muito distintas tornam o ganho marginal.
 
----
+### Por que rembg para segmentação?
+A `rembg` usa o modelo **U²-Net**, treinado para segmentação de primeiro plano genérico. Foi escolhida pela aplicação automática (sem necessidade de rotular máscaras manualmente) e bom desempenho em imagens com objetos centralizados.
 
-### 2) Estratégia de Fine Tuning
+## 🧪 Experimento de Segmentação
 
-A estratégia adotada foi dividida em duas etapas:
-
-- **Congelamento inicial:** todas as camadas da MobileNetV2 foram congeladas, treinando apenas a camada final de classificação  
-- **Fine Tuning:** as últimas 20 camadas foram descongeladas com uma taxa de aprendizado reduzida (`1e-5`)  
-
-Essa abordagem permitiu:
-
-- preservar o conhecimento prévio da ImageNet  
-- adaptar o modelo para características específicas de vacas e cachorros  
-- reduzir o risco de overfitting com poucos dados  
-
----
-
-## 🧪 Experimento de Segmentação (Remoção de Fundo)
-
-Uma das hipóteses avaliadas foi:
-
-**A remoção do fundo melhora a classificação das imagens?**
-
-### 🔬 Metodologia
-
-- Aplicação de segmentação automática utilizando a biblioteca `rembg`  
-- Criação de um novo dataset contendo apenas os objetos principais  
-- Treinamento do modelo com as imagens segmentadas  
-- Comparação dos resultados com o modelo treinado com imagens originais  
-
-Essa abordagem teve como objetivo reduzir ruídos visuais e direcionar o modelo para as características mais relevantes dos objetos.
-
----
+Foi gerado um dataset paralelo aplicando `rembg.remove()` em cada imagem, salvando o resultado com fundo branco em `dataset_sem_fundo/`. O mesmo pipeline de Transfer Learning foi treinado nesse novo conjunto, permitindo comparação direta com o cenário original.
 
 ## 📊 Resultados
 
-- O modelo com Transfer Learning apresentou **alto desempenho**  
-- A remoção de fundo **não trouxe melhoria significativa na acurácia**  
-- O modelo já conseguia identificar corretamente os objetos mesmo com o fundo  
+| Abordagem | Treino (acc) | Validação (acc) | Teste (acc) | Tempo |
+|-----------|:------------:|:---------------:|:-----------:|:-----:|
+| Transfer Learning (originais) | 100% | 100% | **100%** | ~44s |
+| + Fine Tuning | 89% | 100% | **100%** | ~33s |
+| Transfer Learning (sem fundo) | 100% | 100% | **87,5%** | ~50s |
 
- **Observação:**  
-O conjunto de teste contém apenas **8 imagens**, o que pode limitar a generalização dos resultados.
+### 📌 Análise
 
----
+- A remoção de fundo **não melhorou** o desempenho — o modelo já generalizava bem mesmo com fundo presente, indicando boa capacidade da MobileNetV2 em ignorar pixels irrelevantes.
+- O `rembg` separa primeiro plano de fundo **sem entendimento semântico**: na imagem da vaca + bezerro, ambos foram preservados na máscara, pois ambos compõem o primeiro plano.
+- Para isolar um único objeto específico, técnicas mais avançadas como **segmentação semântica** (Mask R-CNN, SAM) seriam mais adequadas.
 
-## 🖼️ Análise da Segmentação
+## ⚠️ Limitações
 
-- Em imagens com um único objeto → resultado satisfatório  
-- Em imagens com múltiplos objetos → todos os elementos do primeiro plano foram mantidos  
+- Dataset com apenas **8 imagens de teste** → métricas têm alta variância e podem ocultar erros do modelo.
+- Classes muito distintas (`cow` vs `dog`) → tarefa "fácil" para uma rede pré-treinada na ImageNet, que já viu ambas as classes.
+- Sem data augmentation → seria essencial em datasets maiores ou para classes mais próximas entre si.
+- Avaliação baseada apenas em acurácia → métricas como precision, recall e F1 dariam um diagnóstico mais completo, especialmente em datasets desbalanceados.
 
-Isso indica que a técnica:
+## ▶️ Como executar
 
-- não distingue semanticamente os objetos  
-- apenas separa fundo e primeiro plano  
+1. **Estrutura do dataset no Drive:**
+   ```
+   MyDrive/dataset-classificacao/
+   ├── train/
+   │   ├── cow/   (32 imagens)
+   │   └── dog/   (32 imagens)
+   ├── val/
+   │   ├── cow/   (4 imagens)
+   │   └── dog/   (4 imagens)
+   └── test/
+       ├── cow/   (4 imagens)
+       └── dog/   (4 imagens)
+   ```
 
-## 🎬 Demonstração
+2. Abrir o notebook no **Google Colab** e montar o Google Drive.
 
-- 📓 Notebook : [abrir notebook](https://github.com/matguifra/FIAP-GRAD-ON-IA/blob/main/ANO1/FASE6/cap1-despertar-da-rede-neural/ir_alem/LeticiaAngelimGuerra_rm567501_pbl_fase6_ir_alem.ipynb)
+3. Executar as células sequencialmente.
 
-- 🎥 Vídeo:  
-[INSERIR LINK DO YOUTUBE]
+4. ⚠️ **Atenção:** após o `pip install rembg`, reinicie o runtime (`Ambiente de execução → Reiniciar sessão`) e execute novamente a partir da célula de imports. Isso resolve o conflito de versão do `pillow`.
+
+## 📁 Estrutura do Repositório
+
+```
+.
+├── README.md
+├── LeticiaGuerra_rm567501_pbl_fase6_iralem.ipynb
+└── assets/
+    └── arquitetura.svg
+```
+
