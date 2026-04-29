@@ -1,4 +1,9 @@
-# 🚀 Projeto Ir Além: Classificação com Transfer Learning e Segmentação  
+<p align="center">
+  <img src="https://raw.githubusercontent.com/matguifra/FIAP-GRAD-ON-IA/main/ANO1/FASE6/cap1-despertar-da-rede-neural/assets/logo-fiap.png" width="200"/>
+</p>
+
+# 🚀 Projeto Ir Além: Usando Transfer Learning e Fine Tuning
+  
 ### 📌 Fase 6 – Capítulo 1 | Opção 3.2 | FIAP
 
 ## 👥 Integrantes
@@ -11,7 +16,7 @@
 | João Rafael Gonçalves Ramos | 567908 |
 
 ## 🔗 Links
-- 📓 **Notebook:** [LeticiaGuerra_rm567501_pbl_fase6_iralem.ipynb](./caminho/para/notebook.ipynb)
+- 📓 **Notebook:** [Abrir no GitHub](https://github.com/matguifra/FIAP-GRAD-ON-IA/blob/main/ANO1/FASE6/cap1-despertar-da-rede-neural/ir_alem/LeticiaAngelimGuerra_rm567501_pbl_fase6_ir_alem.ipynb)
 - 🎥 **Vídeo:** 
 ---
 
@@ -36,17 +41,10 @@ Foram avaliadas duas hipóteses sobre o dataset de classificação binária (`co
 
 ## ⚙️ Fluxo de Processamento (Arquitetura do Projeto)
 
-```text
-Entrada: Imagens originais (cow / dog)
-↓
-Segmentação: Remoção automática do fundo (rembg)
-↓
-Transfer Learning: Extração de características (MobileNetV2 congelada)
-↓
-Fine Tuning: Ajuste das últimas camadas
-↓
-Saída: Classificação binária (cow vs dog)
-```
+<p align="center">
+  <img src="./assets/arquitetura.svg" width="800"/>
+</p>
+
 O fluxo do projeto consiste em: a partir do dataset original (cow/dog), são criados dois caminhos paralelos — um com as imagens originais e outro com o fundo removido pela `rembg`. Em ambos, a MobileNetV2 pré-treinada na ImageNet é usada como extratora de características (camadas congeladas), seguida de uma camada densa de classificação binária. Após o treinamento inicial, é aplicado Fine Tuning nas últimas 20 camadas com taxa de aprendizado reduzida. Os dois modelos são então comparados quanto à acurácia final.
 
 ## 🧠 Justificativa Técnica
@@ -86,7 +84,7 @@ Foi gerado um dataset paralelo aplicando `rembg.remove()` em cada imagem, salvan
 - O `rembg` separa primeiro plano de fundo **sem entendimento semântico**: na imagem da vaca + bezerro, ambos foram preservados na máscara, pois ambos compõem o primeiro plano.
 - Para isolar um único objeto específico, técnicas mais avançadas como **segmentação semântica** (Mask R-CNN, SAM) seriam mais adequadas.
 
-## ⚠️ Limitações
+## Limitações
 
 - Dataset com apenas **8 imagens de teste** → métricas têm alta variância e podem ocultar erros do modelo.
 - Classes muito distintas (`cow` vs `dog`) → tarefa "fácil" para uma rede pré-treinada na ImageNet, que já viu ambas as classes.
@@ -113,7 +111,7 @@ Foi gerado um dataset paralelo aplicando `rembg.remove()` em cada imagem, salvan
 
 3. Executar as células sequencialmente.
 
-4. ⚠️ **Atenção:** após o `pip install rembg`, reinicie o runtime (`Ambiente de execução → Reiniciar sessão`) e execute novamente a partir da célula de imports. Isso resolve o conflito de versão do `pillow`.
+4. **Atenção:** após o `pip install rembg`, reinicie o runtime (`Ambiente de execução → Reiniciar sessão`) e execute novamente a partir da célula de imports. Isso resolve o conflito de versão do `pillow`.
 
 ## 📁 Estrutura do Repositório
 
