@@ -71,6 +71,8 @@ A `rembg` usa o modelo **U²-Net**, treinado para segmentação de primeiro plan
 
 Foi gerado um dataset paralelo aplicando `rembg.remove()` em cada imagem, salvando o resultado com fundo branco em `dataset_sem_fundo/`. O mesmo pipeline de Transfer Learning foi treinado nesse novo conjunto, permitindo comparação direta com o cenário original.
 
+O notebook inclui a visualização completa do processo de segmentação, demonstrando para imagens de cada classe: **(1)** a imagem original, **(2)** a máscara binária obtida pela rede U²-Net e **(3)** a imagem com o background recortado pela aplicação da máscara.
+
 ## 📊 Resultados
 
 | Abordagem | Treino (acc) | Validação (acc) | Teste (acc) | Tempo |
