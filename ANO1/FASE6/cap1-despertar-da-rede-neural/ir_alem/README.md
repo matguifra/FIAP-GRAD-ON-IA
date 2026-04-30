@@ -18,7 +18,7 @@
 ## 🔗 Links
 - 📓 **Notebook:** [Abrir no GitHub](https://github.com/matguifra/FIAP-GRAD-ON-IA/blob/main/ANO1/FASE6/cap1-despertar-da-rede-neural/ir_alem/LeticiaAngelimGuerra_rm567501_pbl_fase6_ir_alem.ipynb)
 - [![Abrir no Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1jtmM6vI9VpiTcJZ1c8Gi_tN18H02I0kO?usp=sharing)
-- 🎥 **Vídeo:** 
+- 🎥 **Vídeo:**  https://youtu.be/0Ky0SZkz3NI
 ---
 
 ## 📜 Descrição
