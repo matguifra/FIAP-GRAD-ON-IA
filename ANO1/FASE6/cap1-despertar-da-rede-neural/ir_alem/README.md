@@ -74,13 +74,13 @@ Foi gerado um dataset paralelo aplicando `rembg.remove()` em cada imagem, salvan
 
 | Abordagem | Treino (acc) | Validação (acc) | Teste (acc) | Tempo |
 |-----------|:------------:|:---------------:|:-----------:|:-----:|
-| Transfer Learning (originais) | 100% | 100% | **100%** | ~44s |
-| + Fine Tuning | 89% | 100% | **100%** | ~33s |
-| Transfer Learning (sem fundo) | 100% | 100% | **87,5%** | ~50s |
+| Transfer Learning (originais) | 100% | 87,5% | **100%** | ~41s |
+| + Fine Tuning | 100% | 100% | **100%** | ~30s |
+| Transfer Learning (sem fundo) | 100% | 100% | **87,5%** | ~40s |
 
 ### 📌 Análise
 
-- A remoção de fundo **não melhorou** o desempenho — o modelo já generalizava bem mesmo com fundo presente, indicando boa capacidade da MobileNetV2 em ignorar pixels irrelevantes.
+- A remoção de fundo **piorou o desempenho** (queda de 100% para 87,5% no teste). Isso indica que o contexto presente no fundo das imagens contribuía para a classificação correta — coerente com o fato da MobileNetV2 ter sido treinada na ImageNet, onde animais aparecem em seus ambientes naturais.
 - O `rembg` separa primeiro plano de fundo **sem entendimento semântico**: na imagem da vaca + bezerro, ambos foram preservados na máscara, pois ambos compõem o primeiro plano.
 - Para isolar um único objeto específico, técnicas mais avançadas como **segmentação semântica** (Mask R-CNN, SAM) seriam mais adequadas.
 
@@ -118,7 +118,7 @@ Foi gerado um dataset paralelo aplicando `rembg.remove()` em cada imagem, salvan
 ```
 .
 ├── README.md
-├── LeticiaGuerra_rm567501_pbl_fase6_iralem.ipynb
+├── LeticiaAngelimGuerra_rm567501_pbl_fase6_ir_alem.ipynb
 └── assets/
     └── arquitetura.svg
 ```
