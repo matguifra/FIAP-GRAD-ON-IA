@@ -23,6 +23,20 @@ Aqui estão organizados:
 
 Esta documentação tem como objetivo demonstrar, de forma estruturada, o que foi aprendido e aplicado durante esta etapa do curso.
 
+---
+
+## 👥 Integrantes
+
+| Nome | RM |
+|---|---|
+| Tales Ferraz de Arruda Domienikan | RM567483 |
+| Leticia Angelim Guerra | RM567501 |
+| Rivando Bezerra Cavalcanti Neto | RM568235 |
+| Matheus Guimarães França | RM567144 |
+| João Rafael Gonçalves Ramos | RM567908 |
+
+---
+
 ## 🎯 Objetivo da Fase
 
 Aplicar técnicas de Machine Learning supervisionado e não supervisionado em problemas reais do agronegócio, com foco em:
@@ -91,5 +105,6 @@ Ao final desta fase, consolidei:
 - ✔️ Comunicação técnica de soluções
 
 ## 📋 Licença
+Este projeto acadêmico segue o modelo de documentação FIAP.
 
-MODELO GIT FIAP por FIAP está licenciado sobre Attribution 4.0 International.
+MODELO GIT FIAP por FIAP está licenciado sob Attribution 4.0 International.
