@@ -1,0 +1,12 @@
+# ==============================
+# Exemplo de configuração Oracle
+# ==============================
+
+# Endereço do banco Oracle (FIAP ou local)
+ORA_DSN=oracle.fiap.com.br:1521/ORCL
+
+# Usuário do banco Oracle (exemplo)
+ORA_USER=seu_usuario
+
+# Senha do banco Oracle (exemplo)
+ORA_PASS=sua_senha

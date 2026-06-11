@@ -1,0 +1,241 @@
+## **CÓDIGO FONTES:**
+
+### sketch.ino:
+
+/*
+ * FARMTECH SOLUTIONS - ESP32 para ThingSpeak
+ * Monitoramento ambiental com envio de dados para nuvem
+ */
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include "DHT.h"
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h> // 
+
+const char* THINGSPEAK_API_KEY = "Y3EG7DJ1U84FNJDX";
+const char* THINGSPEAK_URL = "http://api.thingspeak.com/update";
+
+// LCDs: sensores (0x27) e status (0x3F)
+LiquidCrystal_I2C lcd_sensores(0x27, 20, 4);
+LiquidCrystal_I2C lcd_status(0x3F, 20, 4);
+
+// Configuração do DHT22
+#define DHTPIN 25
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
+
+// Pino analógico do LDR
+#define LDR_PIN 34
+
+// WiFi (Wokwi ou ambiente real)
+const char* ssid     = "Wokwi-GUEST";
+const char* password = "";
+
+// Variáveis globais de leitura
+float temperatura  = 0.0;
+float umidade      = 0.0;
+int   luminosidade = 0;
+
+// Controle de tempo (non-blocking com millis)
+unsigned long ultimaLeitura = 0;
+unsigned long ultimoEnvio   = 0;
+
+const unsigned long INTERVALO_LEITURA = 2000;   // leitura dos sensores
+const unsigned long INTERVALO_ENVIO   = 15000;  // limite ThingSpeak
+
+void setup() {
+  Serial.begin(115200);
+
+  lcd_sensores.init(); lcd_sensores.backlight();
+  lcd_status.init();   lcd_status.backlight();
+
+  dht.begin();
+  conectarWiFi();
+}
+
+void loop() {
+  unsigned long agora = millis();
+
+  // Leitura periódica dos sensores
+  if (agora - ultimaLeitura >= INTERVALO_LEITURA) {
+    ultimaLeitura = agora;
+    lerSensores();
+    atualizarLCD();
+  }
+
+  // Envio periódico para ThingSpeak
+  if (agora - ultimoEnvio >= INTERVALO_ENVIO) {
+    ultimoEnvio = agora;
+    enviarParaThingSpeak();
+  }
+
+  delay(100); // pequena folga para estabilidade
+}
+
+void conectarWiFi() {
+  WiFi.begin(ssid, password);
+
+  int tentativas = 0;
+  while (WiFi.status() != WL_CONNECTED && tentativas < 20) {
+    delay(500);
+    Serial.print(".");
+    tentativas++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n[WiFi] OK! IP: " + WiFi.localIP().toString());
+
+    lcd_status.clear();
+    lcd_status.setCursor(0,0); lcd_status.print("Wi-Fi: CONECTADO");
+    lcd_status.setCursor(0,1); lcd_status.print("ThingSpeak: OK");
+  }
+}
+
+void lerSensores() {
+  float t = dht.readTemperature();
+  float u = dht.readHumidity();
+
+  // Atualiza apenas se leitura válida
+  if (!isnan(t)) temperatura = t;
+  if (!isnan(u)) umidade = u;
+
+  int ldr = analogRead(LDR_PIN);
+
+  // Converte ADC (0–4095) para porcentagem (invertido)
+  luminosidade = map(ldr, 4095, 0, 0, 100);
+  luminosidade = constrain(luminosidade, 0, 100);
+
+  Serial.printf("[SENSOR] T:%.1fC U:%.1f%% L:%d%%\n",
+                temperatura, umidade, luminosidade);
+}
+
+void atualizarLCD() {
+  lcd_sensores.clear();
+
+  lcd_sensores.setCursor(0,0);
+  lcd_sensores.print("FARMTECH SOLUTIONS");
+
+  lcd_sensores.setCursor(0,1);
+  lcd_sensores.print("T:");
+  lcd_sensores.print(temperatura,1);
+  lcd_sensores.print("C");
+
+  lcd_sensores.setCursor(0,2);
+  lcd_sensores.print("U:");
+  lcd_sensores.print(umidade,1);
+  lcd_sensores.print("%");
+
+  lcd_sensores.setCursor(0,3);
+  lcd_sensores.print("L:");
+  lcd_sensores.print(luminosidade);
+  lcd_sensores.print("%");
+}
+
+void enviarParaThingSpeak() {
+  // Evita envio sem conexão
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  HTTPClient http;
+
+  // Monta URL com parâmetros
+  String url = THINGSPEAK_URL;
+  url += "?api_key=" + String(THINGSPEAK_API_KEY);
+  url += "&field1=" + String(temperatura);
+  url += "&field2=" + String(umidade);
+  url += "&field3=" + String(luminosidade);
+
+  http.begin(url);
+
+  int code = http.GET(); // requisição HTTP GET
+
+  Serial.printf("[ThingSpeak] HTTP: %d\n", code);
+
+  http.end(); // libera recursos
+}
+```
+
+---
+
+### diagram.json:
+
+```json
+{
+  "version": 1,
+  "author": "FarmTech Solutions",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 57.6, "left": -167.96, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 60,
+      "left": 300,
+      "attrs": { "humidity": "55.0", "temperature": "26.0" }
+    },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr1", "top": 180, "left": 300, "attrs": {} },
+    {
+      "type": "wokwi-lcd2004",
+      "id": "lcd1",
+      "top": -200,
+      "left": -60,
+      "attrs": { "pins": "i2c", "i2cAddress": "0x27" }
+    },
+    {
+      "type": "wokwi-lcd2004",
+      "id": "lcd2",
+      "top": -380,
+      "left": -60,
+      "attrs": { "pins": "i2c", "i2cAddress": "0x3F" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "dht1:VCC", "esp:3V3", "red", [] ],
+    [ "dht1:GND", "esp:GND.2", "black", [] ],
+    [ "dht1:SDA", "esp:25", "green", [] ],
+    [ "ldr1:VCC", "esp:3V3", "red", [] ],
+    [ "ldr1:GND", "esp:GND.2", "black", [] ],
+    [ "ldr1:AO", "esp:34", "green", [] ],
+    [ "lcd1:VCC", "esp:5", "red", [] ],
+    [ "lcd1:GND", "esp:GND.2", "black", [] ],
+    [ "lcd1:SDA", "esp:21", "green", [] ],
+    [ "lcd1:SCL", "esp:22", "yellow", [] ],
+    [ "lcd2:VCC", "esp:5", "red", [] ],
+    [ "lcd2:GND", "esp:GND.2", "black", [] ],
+    [ "lcd2:SDA", "esp:21", "green", [] ],
+    [ "lcd2:SCL", "esp:22", "yellow", [] ]
+  ],
+  "dependencies": {}
+}
+```
+
+---
+
+## **Justificativa Técnica do Projeto FarmTech Solutions**
+
+O projeto FarmTech Solutions objetiva desenvolver um sistema de monitoramento ambiental baseado em IoT, utilizando o microcontrolador ESP32 integrado à plataforma ThingSpeak, para aquisição, exibição local e armazenamento em nuvem de variáveis ambientais críticas ao cultivo agrícola: temperatura, umidade relativa e luminosidade.
+
+### Seleção dos Sensores
+
+O sensor **DHT22** foi selecionado por oferecer medição simultânea de temperatura (±0,5°C) e umidade (±2–5%), com faixa adequada a ambientes agrícolas, baixo custo e interface digital simples (1-wire), facilitando a integração com o ESP32. Comparativamente ao DHT11 (menor precisão) e ao BME280 (maior custo e complexidade), apresenta melhor relação custo-benefício para prototipagem.
+
+O **LDR (fotoresistor)** foi adotado por sua simplicidade de implementação via entrada analógica do ESP32, baixo custo e capacidade de detectar variações relativas de luminosidade, suficientes para caracterização de microclima. Embora não forneça valores absolutos em lux (como o BH1750), atende ao objetivo de monitoramento qualitativo.
+
+### Contribuição para os Objetivos
+
+Os dados coletados caracterizam o microclima do ambiente, permitindo identificar padrões temporais, anomalias e condições ideais de cultivo. O envio periódico para ThingSpeak (intervalo de 15s) garante histórico para análise retrospectiva e base para automações futuras.
+
+### Considerações Metrológicas
+
+As limitações de precisão dos sensores são mitigadas por validação de leituras inválidas (NaN) e uso de médias temporais. Para aplicações críticas, calibração comparativa e sensores mais precisos são recomendados.
+
+### Conclusão
+
+A arquitetura escolhida valida conceitualmente a aplicação de IoT na agricultura, priorizando acessibilidade, funcionalidade e escalabilidade, com potencial para evolução em sistemas de automação agrícola.
+
+[Link do vídeo no YouTube](https://www.youtube.com/watch?v=XMx9RsOuIoE)
+
+

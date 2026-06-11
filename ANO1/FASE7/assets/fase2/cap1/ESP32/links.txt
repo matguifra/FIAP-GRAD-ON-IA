@@ -1,0 +1,7 @@
+Link do Repositório GitHub: https://github.com/domienik/PBL-SmartFarm-ESP32
+
+Link da imagem: https://i.imgur.com/hiLPUVm.png
+
+Link do Projeto Wokwi: https://wokwi.com/projects/444881556562878465
+
+Link do Vídeo de Demonstração (YouTube): https://youtu.be/ZCE25_D37q

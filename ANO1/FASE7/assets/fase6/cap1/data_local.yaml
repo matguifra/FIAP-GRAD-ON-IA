@@ -1,0 +1,8 @@
+path: /Users/rivandoneto/fase6-yolo/dataset
+train: train/images
+val: val/images
+test: test/images
+nc: 2
+names:
+  0: cow
+  1: dog

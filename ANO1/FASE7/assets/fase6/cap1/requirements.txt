@@ -1,0 +1,10 @@
+torch>=2.0
+torchvision>=0.15
+ultralytics>=8.0
+pillow>=10.0
+datasets>=2.14
+pyyaml>=6.0
+matplotlib>=3.7
+opencv-python-headless>=4.8
+pandas>=2.0
+tqdm>=4.65
